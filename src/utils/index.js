@@ -9,7 +9,7 @@ const SCOPES = [
 const oauth2Client = new google.auth.OAuth2(
   process.env.CLIENT_ID,
   process.env.CLIENT_SECRET,
-  process.cwd() + "/.netlify/functions/app/google/callback"
+  "https://blissful-austin-a1bf3a.netlify.app/.netlify/functions/app/google/callback"
 );
 
 module.exports = {
