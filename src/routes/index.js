@@ -1,7 +1,7 @@
 const { settings } = require("../controllers");
 
 const routes = (app) => {
-  app.get("/", (req, res) => res.send("Hello world!! " + process.cwd()));
+  app.get("/", (req, res) => res.send("Hello world!! " + req.url));
 
   //Change to post and send tokens to add more security to this function
   app.post("/getsettings", settings.getSettings);
