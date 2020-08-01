@@ -9,7 +9,7 @@ const SCOPES = [
 const oauth2Client = new google.auth.OAuth2(
   process.env.CLIENT_ID,
   process.env.CLIENT_SECRET,
-  "http://localhost:4000/google/callback"
+  process.cwd() + "/.netlify/functions/app/google/callback"
 );
 
 module.exports = {

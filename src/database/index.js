@@ -1,4 +1,4 @@
-require("dotenv").config();
+// require("dotenv").config();
 const MongoClient = require("mongodb").MongoClient;
 
 //DB connection
