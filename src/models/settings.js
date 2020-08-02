@@ -171,6 +171,7 @@ const slots = async (data = {}, client, google, cb) => {
     });
 
     var date = new Date(data.day);
+    const timezone_offset = date.getTimezoneOffset();
     var day = date.getDay();
     const dayOfWeek = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
     db.collection("users")
@@ -248,7 +249,14 @@ const slots = async (data = {}, client, google, cb) => {
                   var ok = true;
                   if (e < events.length) {
                     const google_start = new Date(events[e].start);
+                    google_start.setMinutes(
+                      google_start.getMinutes() - timezone_offset
+                    );
                     const google_end = new Date(events[e].end);
+                    google_end.setMinutes(
+                      google_end.getMinutes() - timezone_offset
+                    );
+
                     console.log("first: " + first);
                     console.log("google: " + google_start);
                     if (
