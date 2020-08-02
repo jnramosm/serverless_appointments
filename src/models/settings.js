@@ -259,6 +259,10 @@ const slots = async (data = {}, client, google, cb) => {
 
                     console.log("first: " + first);
                     console.log("google: " + google_start);
+                    console.log(
+                      "Time zone: " +
+                        Intl.DateTimeFormat().resolvedOptions().timeZone
+                    );
                     if (
                       google_start.getTime() >= first.getTime() &&
                       google_start.getTime() <= last.getTime()
