@@ -1,6 +1,6 @@
 const { connection } = require("../database");
 const url = require("url");
-const moment = require("moment-timezone");
+const momentTz = require("moment-timezone");
 
 const getSettings = (user = {}, cb) => {
   connection((db) => {
@@ -172,10 +172,6 @@ const slots = async (data = {}, client, google, cb) => {
     });
 
     var date = new Date(data.day);
-    const timezone_offset =
-      moment.tz(date, "Etc/UTC") -
-      moment.tz(date, "Etc/UTC").clone().tz("America/Santiago");
-    console.log(timezone_offset);
     var day = date.getDay();
     const dayOfWeek = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
     db.collection("users")
@@ -199,7 +195,6 @@ const slots = async (data = {}, client, google, cb) => {
           to.setMinutes(parseInt(docs[0][dayOfWeek[day]][1].split(":")[1]));
           to.setSeconds(0);
           to.setMilliseconds(0);
-
           if (to <= today) return res.json(slots);
           if (since <= today && to >= today) {
             since.setHours(today.getHours() + 1);
@@ -222,78 +217,78 @@ const slots = async (data = {}, client, google, cb) => {
           });
 
           if (docs[0][dayOfWeek[day]][0] != 0) {
-            await calendar.freebusy.query(
-              {
-                resource: {
-                  timeMin: since,
-                  timeMax: to,
-                  timeZone: "America/Santiago",
-                  items: [{ id: "primary" }],
+            try {
+              await calendar.freebusy.query(
+                {
+                  resource: {
+                    timeMin: since,
+                    timeMax: to,
+                    items: [{ id: "primary" }],
+                  },
                 },
-              },
-              (err, res) => {
-                // Check for errors in our query and log them if they exist.
-                if (err) return console.error("Free Busy Query Error: ", err);
+                (err, res) => {
+                  // Check for errors in our query and log them if they exist.
+                  if (err) return console.error("Free Busy Query Error: ", err);
 
-                // Create an array of all events on our calendar during that time.
-                const events = res.data.calendars.primary.busy;
-                // console.log(events);
-                var first = new Date(since);
-                var e = 0;
+                  // Create an array of all events on our calendar during that time.
+                  const events = res.data.calendars.primary.busy;
+                  // console.log(events);
+                  var first = new Date(since);
+                  var e = 0;
 
-                for (var i = 0; i < quantity; i++) {
-                  var last = new Date(first);
-                  last.setHours(
-                    last.getHours() + parseInt(docs[0].sess.split(":")[0])
-                  );
-                  last.setMinutes(
-                    last.getMinutes() + parseInt(docs[0].sess.split(":")[1]) - 1
-                  );
-
-                  var ok = true;
-                  if (e < events.length) {
-                    var google_start = new Date(events[e].start);
-                    google_start.setMinutes(
-                      google_start.getMinutes() - timezone_offset
+                  for (var i = 0; i < quantity; i++) {
+                    var last = new Date(first);
+                    last.setHours(
+                      last.getHours() + parseInt(docs[0].sess.split(":")[0])
                     );
-                    var google_end = new Date(events[e].end);
-                    google_end.setMinutes(
-                      google_end.getMinutes() - timezone_offset
+                    last.setMinutes(
+                      last.getMinutes() +
+                        parseInt(docs[0].sess.split(":")[1]) -
+                        1
                     );
-                    if (
-                      google_start.getTime() >= first.getTime() &&
-                      google_start.getTime() <= last.getTime()
-                    ) {
-                      ok = false;
-                      if (google_end.getTime() <= last.getTime()) e++;
-                    } else if (
-                      google_end.getTime() >= first.getTime() &&
-                      google_end.getTime() <= last.getTime()
-                    ) {
-                      ok = false;
-                      e++;
+
+                    var ok = true;
+                    if (e < events.length) {
+                      var google_start = momentTz(events[e].start).tz(
+                        "America/Santiago"
+                      );
+                      var google_end = momentTz(events[e].end).tz(
+                        "America/Santiago"
+                      );
+                      console.log("first: " + first);
+                      console.log("google: " + google_start);
+
+                      if (google_start >= first && google_start <= last) {
+                        ok = false;
+                        if (google_end <= last) e++;
+                      } else if (google_end >= first && google_end <= last) {
+                        ok = false;
+                        e++;
+                      }
                     }
-                  }
 
-                  // console.log(ok);
-                  if (ok) {
-                    slots.push([
-                      ("0" + first.getHours()).slice(-2) +
-                        ":" +
-                        ("0" + first.getMinutes()).slice(-2),
-                      ("0" + last.getHours()).slice(-2) +
-                        ":" +
-                        ("0" + last.getMinutes()).slice(-2),
-                    ]);
-                  }
+                    // console.log(ok);
+                    if (ok) {
+                      slots.push([
+                        ("0" + first.getHours()).slice(-2) +
+                          ":" +
+                          ("0" + first.getMinutes()).slice(-2),
+                        ("0" + last.getHours()).slice(-2) +
+                          ":" +
+                          ("0" + last.getMinutes()).slice(-2),
+                      ]);
+                    }
 
-                  first = new Date(last);
-                  first.setMinutes(first.getMinutes() + 1);
+                    first = new Date(last);
+                    first.setMinutes(first.getMinutes() + 1);
+                  }
+                  cb(slots);
                 }
-                cb(slots);
-              }
-            );
-            // console.log(events);
+              );
+              // console.log(events);
+            } catch (e) {
+              console.log(e);
+            }
           } else {
             cb(slots);
           }
