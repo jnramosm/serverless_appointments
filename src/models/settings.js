@@ -1,5 +1,6 @@
 const { connection } = require("../database");
 const url = require("url");
+const moment = require("moment-timezone");
 
 const getSettings = (user = {}, cb) => {
   connection((db) => {
@@ -171,7 +172,10 @@ const slots = async (data = {}, client, google, cb) => {
     });
 
     var date = new Date(data.day);
-    const timezone_offset = date.getTimezoneOffset();
+    const timezone_offset =
+      moment.tz(date, "Etc/UTC") -
+      moment.tz(date, "Etc/UTC").clone().tz("America/Santiago");
+    console.log(timezone_offset);
     var day = date.getDay();
     const dayOfWeek = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
     db.collection("users")
@@ -255,13 +259,6 @@ const slots = async (data = {}, client, google, cb) => {
                     var google_end = new Date(events[e].end);
                     google_end.setMinutes(
                       google_end.getMinutes() - timezone_offset
-                    );
-
-                    console.log("first: " + first);
-                    console.log("google: " + google_start);
-                    console.log(
-                      "Time zone: " +
-                        Intl.DateTimeFormat().resolvedOptions().timeZone
                     );
                     if (
                       google_start.getTime() >= first.getTime() &&
