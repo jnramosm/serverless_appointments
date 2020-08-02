@@ -186,11 +186,14 @@ const slots = async (data = {}, client, google, cb) => {
           var since = new Date(data.day);
           var today = new Date();
           since.setHours(parseInt(docs[0][dayOfWeek[day]][0].split(":")[0]));
-          since.setHours(parseInt(docs[0][dayOfWeek[day]][0].split(":")[0]));
           since.setMinutes(parseInt(docs[0][dayOfWeek[day]][0].split(":")[1]));
+          since.setSeconds(0);
+          since.setMilliseconds(0);
           var to = new Date(data.day);
           to.setHours(parseInt(docs[0][dayOfWeek[day]][1].split(":")[0]));
           to.setMinutes(parseInt(docs[0][dayOfWeek[day]][1].split(":")[1]));
+          to.setSeconds(0);
+          to.setMilliseconds(0);
 
           if (to <= today) return res.json(slots);
           if (since <= today && to >= today) {
@@ -230,9 +233,7 @@ const slots = async (data = {}, client, google, cb) => {
                 const events = res.data.calendars.primary.busy;
                 // console.log(events);
                 var first = new Date(since);
-                // ("0" + since.getHours()).slice(-2) +
-                // ":" +
-                // ("0" + since.getMinutes()).slice(-2);
+                var e = 0;
 
                 for (var i = 0; i < quantity; i++) {
                   var last = new Date(first);
@@ -244,15 +245,24 @@ const slots = async (data = {}, client, google, cb) => {
                   );
 
                   var ok = true;
-                  for (var j = 0; j < events.length; j++) {
+                  if (e < events.length) {
+                    const google_start = new Date(events[e].start);
+                    const google_end = new Date(events[e].end);
                     if (
-                      new Date(events[j].start) <= last &&
-                      new Date(events[j].end) >= first
+                      google_start.getTime() >= first.getTime() &&
+                      google_start.getTime() <= last.getTime()
                     ) {
                       ok = false;
-                      break;
+                      if (google_end.getTime() <= last.getTime()) e++;
+                    } else if (
+                      google_end.getTime() >= first.getTime() &&
+                      google_end.getTime() <= last.getTime()
+                    ) {
+                      ok = false;
+                      e++;
                     }
                   }
+
                   // console.log(ok);
                   if (ok) {
                     slots.push([
