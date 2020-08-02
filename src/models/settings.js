@@ -248,6 +248,8 @@ const slots = async (data = {}, client, google, cb) => {
                   if (e < events.length) {
                     const google_start = new Date(events[e].start);
                     const google_end = new Date(events[e].end);
+                    console.log("first: " + first);
+                    console.log("google: " + google_start);
                     if (
                       google_start.getTime() >= first.getTime() &&
                       google_start.getTime() <= last.getTime()
