@@ -222,6 +222,7 @@ const slots = async (data = {}, client, google, cb) => {
                 resource: {
                   timeMin: since,
                   timeMax: to,
+                  timeZone: "America/Santiago",
                   items: [{ id: "primary" }],
                 },
               },
