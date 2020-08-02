@@ -248,11 +248,11 @@ const slots = async (data = {}, client, google, cb) => {
 
                   var ok = true;
                   if (e < events.length) {
-                    const google_start = new Date(events[e].start);
+                    var google_start = new Date(events[e].start);
                     google_start.setMinutes(
                       google_start.getMinutes() - timezone_offset
                     );
-                    const google_end = new Date(events[e].end);
+                    var google_end = new Date(events[e].end);
                     google_end.setMinutes(
                       google_end.getMinutes() - timezone_offset
                     );
