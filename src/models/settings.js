@@ -1,6 +1,6 @@
 const { connection } = require("../database");
 const url = require("url");
-const momentTz = require("moment-timezone");
+const moment = require("moment-timezone");
 
 const getSettings = (user = {}, cb) => {
   connection((db) => {
@@ -184,26 +184,30 @@ const slots = async (data = {}, client, google, cb) => {
           var sess_dur =
             parseInt(docs[0].sess.split(":")[0]) +
             parseInt(docs[0].sess.split(":")[1]) / 60;
-          var since = new Date(data.day);
-          var today = new Date();
-          since.setHours(parseInt(docs[0][dayOfWeek[day]][0].split(":")[0]));
-          since.setMinutes(parseInt(docs[0][dayOfWeek[day]][0].split(":")[1]));
-          since.setSeconds(0);
-          since.setMilliseconds(0);
-          var to = new Date(data.day);
-          to.setHours(parseInt(docs[0][dayOfWeek[day]][1].split(":")[0]));
-          to.setMinutes(parseInt(docs[0][dayOfWeek[day]][1].split(":")[1]));
-          to.setSeconds(0);
-          to.setMilliseconds(0);
+          // var since = new Date(data.day);
+          var since = moment(data.day).tz("America/Santiago");
+          since.hours(parseInt(docs[0][dayOfWeek[day]][0].split(":")[0]));
+          since.minutes(parseInt(docs[0][dayOfWeek[day]][0].split(":")[1]));
+          since.seconds(0);
+          since.milliseconds(0);
+          var today = moment();
+          // since.setHours(parseInt(docs[0][dayOfWeek[day]][0].split(":")[0]));
+          // since.setMinutes(parseInt(docs[0][dayOfWeek[day]][0].split(":")[1]));
+          // since.setSeconds(0);
+          // since.setMilliseconds(0);
+
+          var to = moment(data.day).tz("America/Santiago");
+          to.hours(parseInt(docs[0][dayOfWeek[day]][1].split(":")[0]));
+          to.minutes(parseInt(docs[0][dayOfWeek[day]][1].split(":")[1]));
+          to.seconds(0);
+          to.milliseconds(0);
           if (to <= today) return res.json(slots);
           if (since <= today && to >= today) {
-            since.setHours(today.getHours() + 1);
+            since.hours(today.getHours() + 1);
           }
 
           var timeframe =
-            to.getHours() -
-            since.getHours() +
-            (to.getMinutes() - since.getMinutes()) / 60;
+            to.hours() - since.hours() + (to.minutes() - since.minutes()) / 60;
           var quantity = parseInt(timeframe / sess_dur);
 
           //Freebusy query
@@ -233,26 +237,24 @@ const slots = async (data = {}, client, google, cb) => {
                   // Create an array of all events on our calendar during that time.
                   const events = res.data.calendars.primary.busy;
                   // console.log(events);
-                  var first = new Date(since);
+                  var first = moment(since);
                   var e = 0;
 
                   for (var i = 0; i < quantity; i++) {
-                    var last = new Date(first);
-                    last.setHours(
-                      last.getHours() + parseInt(docs[0].sess.split(":")[0])
+                    var last = moment(first);
+                    last.hours(
+                      last.hours() + parseInt(docs[0].sess.split(":")[0])
                     );
-                    last.setMinutes(
-                      last.getMinutes() +
-                        parseInt(docs[0].sess.split(":")[1]) -
-                        1
+                    last.minutes(
+                      last.minutes() + parseInt(docs[0].sess.split(":")[1]) - 1
                     );
 
                     var ok = true;
                     if (e < events.length) {
-                      var google_start = momentTz(events[e].start).tz(
+                      var google_start = moment(events[e].start).tz(
                         "America/Santiago"
                       );
-                      var google_end = momentTz(events[e].end).tz(
+                      var google_end = moment(events[e].end).tz(
                         "America/Santiago"
                       );
                       console.log("first: " + first);
@@ -270,17 +272,17 @@ const slots = async (data = {}, client, google, cb) => {
                     // console.log(ok);
                     if (ok) {
                       slots.push([
-                        ("0" + first.getHours()).slice(-2) +
+                        ("0" + first.hours()).slice(-2) +
                           ":" +
-                          ("0" + first.getMinutes()).slice(-2),
-                        ("0" + last.getHours()).slice(-2) +
+                          ("0" + first.minutes()).slice(-2),
+                        ("0" + last.hours()).slice(-2) +
                           ":" +
-                          ("0" + last.getMinutes()).slice(-2),
+                          ("0" + last.minutes()).slice(-2),
                       ]);
                     }
 
-                    first = new Date(last);
-                    first.setMinutes(first.getMinutes() + 1);
+                    first = moment(last);
+                    first.minutes(first.minutes() + 1);
                   }
                   cb(slots);
                 }
