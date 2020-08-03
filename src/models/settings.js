@@ -326,7 +326,7 @@ const createEvent = (data = {}, client, google, cb) => {
     start.minutes(parseInt(slot.split("/")[0].split(":")[1]));
     var end = moment(date).tz(timeZone);
     end.hours(parseInt(slot.split("/")[1].split(":")[0]));
-    end.minutes(parseInt(slot.split("/")[1].split(":")[1]) + 1);
+    end.minutes(parseInt(slot.split("/")[1].split(":")[1]));
 
     db.collection("users")
       .find({ email: data.email_doctor })
