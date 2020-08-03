@@ -201,6 +201,7 @@ const slots = async (data = {}, client, google, cb) => {
           to.minutes(parseInt(docs[0][dayOfWeek[day]][1].split(":")[1]));
           to.seconds(0);
           to.milliseconds(0);
+          console.log(since + " , " + to);
           if (to <= today) return res.json(slots);
           if (since <= today && to >= today) {
             since.hours(today.getHours() + 1);
