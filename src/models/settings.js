@@ -2,6 +2,8 @@ const { connection } = require("../database");
 const url = require("url");
 const moment = require("moment-timezone");
 
+const timeZone = "America/Santiago";
+
 const getSettings = (user = {}, cb) => {
   connection((db) => {
     db.collection("users").findOne({ email: user.email }, (err, userDb) => {
@@ -185,18 +187,18 @@ const slots = async (data = {}, client, google, cb) => {
             parseInt(docs[0].sess.split(":")[0]) +
             parseInt(docs[0].sess.split(":")[1]) / 60;
           // var since = new Date(data.day);
-          var since = moment(data.day).tz("America/Santiago");
+          var since = moment(data.day).tz(timeZone);
           since.hours(parseInt(docs[0][dayOfWeek[day]][0].split(":")[0]));
           since.minutes(parseInt(docs[0][dayOfWeek[day]][0].split(":")[1]));
           since.seconds(0);
           since.milliseconds(0);
-          var today = moment().tz("America/Santiago");
+          var today = moment().tz(timeZone);
           // since.setHours(parseInt(docs[0][dayOfWeek[day]][0].split(":")[0]));
           // since.setMinutes(parseInt(docs[0][dayOfWeek[day]][0].split(":")[1]));
           // since.setSeconds(0);
           // since.setMilliseconds(0);
 
-          var to = moment(data.day).tz("America/Santiago");
+          var to = moment(data.day).tz(timeZone);
           to.hours(parseInt(docs[0][dayOfWeek[day]][1].split(":")[0]));
           to.minutes(parseInt(docs[0][dayOfWeek[day]][1].split(":")[1]));
           to.seconds(0);
@@ -251,12 +253,8 @@ const slots = async (data = {}, client, google, cb) => {
 
                     var ok = true;
                     if (e < events.length) {
-                      var google_start = moment(events[e].start).tz(
-                        "America/Santiago"
-                      );
-                      var google_end = moment(events[e].end).tz(
-                        "America/Santiago"
-                      );
+                      var google_start = moment(events[e].start).tz(timeZone);
+                      var google_end = moment(events[e].end).tz(timeZone);
                       // console.log("first: " + first);
                       // console.log("google: " + google_start);
 
@@ -323,12 +321,12 @@ const createEvent = (data = {}, client, google, cb) => {
     var email = data.email_customer;
     var date = data.date;
     var slot = data.slot;
-    var start = new Date(date);
-    start.setHours(parseInt(slot.split("/")[0].split(":")[0]));
-    start.setMinutes(parseInt(slot.split("/")[0].split(":")[1]));
-    var end = new Date(date);
-    end.setHours(parseInt(slot.split("/")[1].split(":")[0]));
-    end.setMinutes(parseInt(slot.split("/")[1].split(":")[1]) + 1);
+    var start = moment(date).tz(timeZone);
+    start.hours(parseInt(slot.split("/")[0].split(":")[0]));
+    start.minutes(parseInt(slot.split("/")[0].split(":")[1]));
+    var end = moment(date).tz(timeZone);
+    end.hours(parseInt(slot.split("/")[1].split(":")[0]));
+    end.minutes(parseInt(slot.split("/")[1].split(":")[1]) + 1);
 
     db.collection("users")
       .find({ email: data.email_doctor })
