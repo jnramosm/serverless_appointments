@@ -14,8 +14,11 @@ const oauth2Client = new google.auth.OAuth2(
   "https://blissful-austin-a1bf3a.netlify.app/.netlify/functions/app/google/callback"
 );
 
+const timeZone = "America/Santiago";
+
 module.exports = {
   SCOPES,
   oauth2Client,
   google,
+  timeZone,
 };

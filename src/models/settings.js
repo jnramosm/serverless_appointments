@@ -190,7 +190,7 @@ const slots = async (data = {}, client, google, cb) => {
           since.minutes(parseInt(docs[0][dayOfWeek[day]][0].split(":")[1]));
           since.seconds(0);
           since.milliseconds(0);
-          var today = moment();
+          var today = moment().tz("America/Santiago");
           // since.setHours(parseInt(docs[0][dayOfWeek[day]][0].split(":")[0]));
           // since.setMinutes(parseInt(docs[0][dayOfWeek[day]][0].split(":")[1]));
           // since.setSeconds(0);
@@ -260,10 +260,10 @@ const slots = async (data = {}, client, google, cb) => {
                       // console.log("first: " + first);
                       // console.log("google: " + google_start);
 
-                      if (google_start >= first && google_start <= last) {
+                      if (google_start >= first && google_start < last) {
                         ok = false;
                         if (google_end <= last) e++;
-                      } else if (google_end >= first && google_end <= last) {
+                      } else if (google_end >= first && google_end < last) {
                         ok = false;
                         e++;
                       }
