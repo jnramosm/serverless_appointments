@@ -246,7 +246,7 @@ const slots = async (data = {}, client, google, cb) => {
                       last.hours() + parseInt(docs[0].sess.split(":")[0])
                     );
                     last.minutes(
-                      last.minutes() + parseInt(docs[0].sess.split(":")[1]) - 1
+                      last.minutes() + parseInt(docs[0].sess.split(":")[1])
                     );
 
                     var ok = true;
@@ -282,7 +282,7 @@ const slots = async (data = {}, client, google, cb) => {
                     }
 
                     first = moment(last);
-                    first.minutes(first.minutes() + 1);
+                    first.minutes(first.minutes());
                   }
                   cb(slots);
                 }
