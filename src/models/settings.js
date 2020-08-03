@@ -173,7 +173,7 @@ const slots = async (data = {}, client, google, cb) => {
 
     var date = new Date(data.day);
     var day = date.getDay();
-    const dayOfWeek = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
+    const dayOfWeek = ["sat", "sun", "mon", "tue", "wed", "thu", "fri"];
     db.collection("users")
       .find({ email: data.email })
       .toArray()
@@ -201,10 +201,9 @@ const slots = async (data = {}, client, google, cb) => {
           to.minutes(parseInt(docs[0][dayOfWeek[day]][1].split(":")[1]));
           to.seconds(0);
           to.milliseconds(0);
-          console.log(since + " , " + to);
           if (to <= today) return res.json(slots);
           if (since <= today && to >= today) {
-            since.hours(today.getHours() + 1);
+            since.hours(today.hours() + 1);
           }
 
           var timeframe =
@@ -258,8 +257,8 @@ const slots = async (data = {}, client, google, cb) => {
                       var google_end = moment(events[e].end).tz(
                         "America/Santiago"
                       );
-                      console.log("first: " + first);
-                      console.log("google: " + google_start);
+                      // console.log("first: " + first);
+                      // console.log("google: " + google_start);
 
                       if (google_start >= first && google_start <= last) {
                         ok = false;
