@@ -41,6 +41,25 @@ const getSettings = async (user = {}, accessToken, cb) => {
   });
 };
 
+const getSettingsPublic = async (user = {}, accessToken, cb) => {
+  connection((db) => {
+    db.collection("users").findOne({ email: user.email }, (err, userDb) => {
+      if (err) console.log(err);
+      obj = {};
+      obj["mon"] = userDb.mon;
+      obj["tue"] = userDb.tue;
+      obj["wed"] = userDb.wed;
+      obj["thu"] = userDb.thu;
+      obj["fri"] = userDb.fri;
+      obj["sat"] = userDb.sat;
+      obj["sun"] = userDb.sun;
+      obj["sess"] = userDb.sess;
+      obj["val"] = userDb.val;
+      cb(obj);
+    });
+  });
+};
+
 const setSettings = (user = {}, accessToken, cb) => {
   verifyToken(accessToken, (ok) => {
     if (ok) {
@@ -459,6 +478,7 @@ const createEvent = (data = {}, client, google, cb) => {
 
 module.exports = {
   getSettings,
+  getSettingsPublic,
   setSettings,
   register,
   // login,

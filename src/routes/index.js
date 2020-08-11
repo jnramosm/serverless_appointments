@@ -6,6 +6,8 @@ const routes = (app) => {
   //Change to post and send tokens to add more security to this function
   app.post("/getsettings", settings.getSettings);
 
+  app.post("/getsettingspublic", settings.getSettings);
+
   app.post("/setsettings", settings.setSettings);
 
   app.post("/register", settings.register);

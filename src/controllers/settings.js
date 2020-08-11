@@ -11,6 +11,12 @@ const getSettings = (req, res, next) => {
   });
 };
 
+const getSettingsPublic = (req, res, next) => {
+  settings.getSettingsPublic(req.body, (obj) => {
+    res.json(obj);
+  });
+};
+
 const setSettings = (req, res, next) => {
   settings.setSettings(req.body, req.headers.authorization, (message) =>
     res.json(message)
@@ -63,6 +69,7 @@ const createEvent = (req, res, next) => {
 
 module.exports = {
   getSettings,
+  getSettingsPublic,
   setSettings,
   register,
   // login,
