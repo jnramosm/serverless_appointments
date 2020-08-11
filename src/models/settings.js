@@ -41,7 +41,7 @@ const getSettings = async (user = {}, accessToken, cb) => {
   });
 };
 
-const getSettingsPublic = async (user = {}, accessToken, cb) => {
+const getSettingsPublic = async (user = {}, cb) => {
   connection((db) => {
     db.collection("users").findOne({ email: user.email }, (err, userDb) => {
       if (err) console.log(err);
