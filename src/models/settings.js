@@ -33,6 +33,7 @@ const getSettings = async (user = {}, accessToken, cb) => {
           obj["sess"] = userDb.sess;
           obj["email"] = userDb.email;
           obj["google"] = userDb.google;
+          obj["val"] = userDb.val;
           cb(obj);
         });
       });
@@ -63,6 +64,7 @@ const setSettings = (user = {}, accessToken, cb) => {
               sat_b: user.unavailable.sat,
               sun_b: user.unavailable.sun,
               sess: user.available.sess,
+              val: user.val,
             },
           },
           {
