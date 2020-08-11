@@ -5,7 +5,8 @@ const { verifyToken } = require("../utils");
 const { Console } = require("console");
 
 const timeZone = "America/Santiago";
-const domainApi = "http://localhost:9000/.netlify/functions/app";
+const domainApi =
+  "https://blissful-austin-a1bf3a.netlify.app/.netlify/functions/app";
 const domainSite = "http://localhost:3000";
 
 const getSettings = async (user = {}, accessToken, cb) => {
