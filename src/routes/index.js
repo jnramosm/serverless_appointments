@@ -10,7 +10,7 @@ const routes = (app) => {
 
   app.post("/register", settings.register);
 
-  app.post("/login", settings.login);
+  // app.post("/login", settings.login);
 
   app.get("/google", settings.googleCall);
 

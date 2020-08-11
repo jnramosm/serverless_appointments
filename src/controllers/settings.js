@@ -6,22 +6,24 @@ const getSettings = (req, res, next) => {
   // e.g.
   //const accessToken = req.headers.authorization.split(" ")[1]
 
-  settings.getSettings(req.body, (obj) => {
+  settings.getSettings(req.body, req.headers.authorization, (obj) => {
     res.json(obj);
   });
 };
 
 const setSettings = (req, res, next) => {
-  settings.setSettings(req.body, (message) => res.json(message));
+  settings.setSettings(req.body, req.headers.authorization, (message) =>
+    res.json(message)
+  );
 };
 
 const register = (req, res, next) => {
   settings.register(req.body, (message) => res.json(message));
 };
 
-const login = (req, res, next) => {
-  settings.login(req.body, (message) => res.json(message));
-};
+// const login = (req, res, next) => {
+//   settings.login(req.body, (message) => res.json(message));
+// };
 
 const googleCall = (req, res, next) => {
   settings.googleCall(
@@ -42,7 +44,9 @@ const googleCallBack = (req, res, next) => {
 };
 
 const googleRemove = (req, res, next) => {
-  settings.googleRemove(req.body.email, (message) => res.json({ message }));
+  settings.googleRemove(req.body.email, req.headers.authorization, (message) =>
+    res.json({ message })
+  );
 };
 
 const slots = (req, res, next) => {
@@ -61,7 +65,7 @@ module.exports = {
   getSettings,
   setSettings,
   register,
-  login,
+  // login,
   googleCall,
   googleCallBack,
   googleRemove,
