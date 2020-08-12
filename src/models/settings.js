@@ -2,10 +2,9 @@ const { connection } = require("../database");
 const url = require("url");
 const moment = require("moment-timezone");
 const { verifyToken } = require("../utils");
-const { Console } = require("console");
 
 const timeZone = "America/Santiago";
-const domainApi =
+const domainApi = //"http://localhost:9000/.netlify/functions/app";
   "https://blissful-austin-a1bf3a.netlify.app/.netlify/functions/app";
 const domainSite = "http://localhost:3000";
 
