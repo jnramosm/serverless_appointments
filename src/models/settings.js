@@ -232,7 +232,7 @@ const slots = async (data = {}, client, google, cb) => {
     });
     var date = moment(data.day);
     var day = date.day();
-    const dayOfWeek = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
+    const dayOfWeek = ["sat", "sun", "mon", "tue", "wed", "thu", "fri"]; //In production move sat to the beggining, in development move it to the end
     db.collection("users")
       .find({ email: data.email })
       .toArray()
