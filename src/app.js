@@ -10,7 +10,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: "https://distracted-jennings-0c5b65.netlify.app",
     credentials: true,
   })
 );

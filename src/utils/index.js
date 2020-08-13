@@ -3,6 +3,7 @@ const { google } = require("googleapis");
 const jwt = require("jsonwebtoken");
 const pem = require("jwk-to-pem");
 const axios = require("axios");
+const sgMail = require("@sendgrid/mail");
 
 const SCOPES = [
   "https://www.googleapis.com/auth/calendar.readonly",
@@ -70,10 +71,22 @@ const verifyToken = async (accessToken, cb) => {
   });
 };
 
+const sendEmail = (to, from, name, date, time, cel) => {
+  sgMail.setApiKey(process.env.SENDGRID_KEY);
+  const msg = {
+    to,
+    from,
+    subject: `${name} ha reservado una hora contigo`,
+    text: `${name} ha reservado una hora para el ${date} a las ${time}. En caso que necesites contactar a ${name} su número celular es ${cel}`,
+  };
+  sgMail.send(msg);
+};
+
 module.exports = {
   SCOPES,
   oauth2Client,
   google,
   timeZone,
   verifyToken,
+  sendEmail,
 };

@@ -1,12 +1,12 @@
 const { connection } = require("../database");
 const url = require("url");
 const moment = require("moment-timezone");
-const { verifyToken } = require("../utils");
+const { verifyToken, sendEmail } = require("../utils");
 
 const timeZone = "America/Santiago";
 const domainApi = //"http://localhost:9000/.netlify/functions/app";
   "https://blissful-austin-a1bf3a.netlify.app/.netlify/functions/app";
-const domainSite = "http://localhost:3000";
+const domainSite = "https://distracted-jennings-0c5b65.netlify.app"; //"http://localhost:3000";
 
 const getSettings = async (user = {}, accessToken, cb) => {
   verifyToken(accessToken, (ok) => {
@@ -134,16 +134,6 @@ const register = (user = {}, cb) => {
   });
 };
 
-// const login = (user = {}, cb) => {
-//   connection((db) => {
-//     db.collection("users").findOne({ email: user.email }, (err, data) => {
-//       if (err) console.log(err);
-//       if (data) cb({ message: "Success" });
-//       else cb({ message: "User does not exist" });
-//     });
-//   });
-// };
-
 const googleCall = (google, client, scopes, cb) => {
   google.options({ auth: client });
   const authorizeUrl = client.generateAuthUrl({
@@ -232,7 +222,8 @@ const slots = async (data = {}, client, google, cb) => {
     });
     var date = moment(data.day);
     var day = date.day();
-    const dayOfWeek = ["sat", "sun", "mon", "tue", "wed", "thu", "fri"]; //In production move sat to the beggining, in development move it to the end
+    //In production move sat to the beggining, in development move it to the end
+    const dayOfWeek = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
     db.collection("users")
       .find({ email: data.email })
       .toArray()
@@ -420,6 +411,25 @@ const createEvent = (data = {}, client, google, cb) => {
     var end = moment(date).tz(timeZone);
     end.hours(parseInt(slot.split("/")[1].split(":")[0]));
     end.minutes(parseInt(slot.split("/")[1].split(":")[1]));
+
+    await db.collection("stats").insert({
+      doctor: data.email_doctor,
+      patient: data.name,
+      patient_email: data.email,
+      date_reserve: moment().tz(timeZone),
+      date_appointment: start._i.split("T")[0],
+      slot: data.slot,
+      celu: data.cel,
+    });
+
+    sendEmail(
+      data.email_doctor,
+      data.email_doctor,
+      data.name,
+      start._i.split("T")[0],
+      data.slot,
+      data.cel
+    );
 
     db.collection("users")
       .find({ email: data.email_doctor })
